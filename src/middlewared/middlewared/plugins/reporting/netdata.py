@@ -45,6 +45,9 @@ class NetData():
         """Get information about the running netdata instance"""
         return await self.make_request('info')
 
+    async def get_all_metrics(self):
+        return await self.make_request('allmetrics?format=json')
+
     async def get_charts(self):
         """Get available charts"""
         return list((await self.make_request('charts')).get('charts', {}))

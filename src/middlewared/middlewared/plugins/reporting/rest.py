@@ -29,3 +29,7 @@ class ReportingRestService(Service):
     async def get_chart_metrics(self, data):
         async with NetData() as nd:
             return await nd.get_chart_metrics(data['chart'], data['before'], data['after'])
+
+    async def get_all_metrics(self):
+        async with NetData() as nd:
+            return await nd.get_all_metrics()
