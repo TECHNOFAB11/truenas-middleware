@@ -4,7 +4,6 @@ from middlewared.event import EventSource
 from middlewared.schema import Dict, Float, Int
 from middlewared.validators import Range
 
-from .iostat import DiskStats
 from .ifstat import IfStats
 
 
@@ -83,7 +82,6 @@ class RealtimeEventSource(EventSource):
         cp_time_last = None
         cp_times_last = None
         last_iface_stats = {}
-        last_disk_stats = {}
         internal_interfaces = tuple(self.middleware.call_sync('interface.internal_interfaces'))
 
         while not self._cancel_sync.is_set():
@@ -142,15 +140,6 @@ class RealtimeEventSource(EventSource):
                     last_iface_stats, new = ifstat
                 else:
                     last_iface_stats, data['interfaces'] = ifstat
-
-            # Disk IO Stats
-            if not last_disk_stats:
-                # means this is the first time disk stats are being gathered so
-                # get the results but don't set anything yet since we need to
-                # calculate the difference between the iterations
-                last_disk_stats, new = DiskStats(interval, last_disk_stats).read()
-            else:
-                last_disk_stats, data['disks'] = DiskStats(interval, last_disk_stats).read()
 
             self.send_event('ADDED', fields=data)
             time.sleep(interval)
