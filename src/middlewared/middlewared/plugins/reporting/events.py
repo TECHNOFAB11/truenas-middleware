@@ -1,7 +1,4 @@
-import psutil
 import time
-
-import humanfriendly
 
 from middlewared.event import EventSource
 from middlewared.schema import Dict, Float, Int
@@ -9,7 +6,6 @@ from middlewared.validators import Range
 
 from .iostat import DiskStats
 from .ifstat import IfStats
-from .arcstat import ZfsArcStats
 
 
 class RealtimeEventSource(EventSource):
@@ -82,45 +78,6 @@ class RealtimeEventSource(EventSource):
             data['usage'] = 0
         return data
 
-    def get_memory_info(self, arc_size):
-        with open("/proc/meminfo") as f:
-            meminfo = {
-                s[0]: humanfriendly.parse_size(s[1], binary=True)
-                for s in [
-                    line.split(":", 1)
-                    for line in f.readlines()
-                ]
-            }
-
-        classes = {}
-        classes["page_tables"] = meminfo["PageTables"]
-        classes["swap_cache"] = meminfo["SwapCached"]
-        classes["slab_cache"] = meminfo["Slab"]
-        classes["cache"] = meminfo["Cached"]
-        classes["buffers"] = meminfo["Buffers"]
-        classes["unused"] = meminfo["MemFree"]
-        classes["arc"] = arc_size
-        classes["apps"] = meminfo["MemTotal"] - sum(classes.values())
-
-        extra = {
-            "inactive": meminfo["Inactive"],
-            "committed": meminfo["Committed_AS"],
-            "active": meminfo["Active"],
-            "vmalloc_used": meminfo["VmallocUsed"],
-            "mapped": meminfo["Mapped"],
-        }
-
-        swap = {
-            "used": meminfo["SwapTotal"] - meminfo["SwapFree"],
-            "total": meminfo["SwapTotal"],
-        }
-
-        return {
-            "classes": classes,
-            "extra": extra,
-            "swap": swap,
-        }
-
     def run_sync(self):
         interval = self.arg['interval']
         cp_time_last = None
@@ -132,12 +89,11 @@ class RealtimeEventSource(EventSource):
         while not self._cancel_sync.is_set():
             data = {}
 
-            # ZFS ARC Size (raw value is in Bytes)
-            data['zfs'] = ZfsArcStats().read()
+            # this gathers the most recent metric recorded via netdata (for all charts)
+            allmetrics = self.middleware.call_sync('reporting.rest.get_all_metrics')
 
-            # Virtual memory use
-            data['memory'] = self.get_memory_info(data['zfs']['arc_size'])
-            data['virtual_memory'] = psutil.virtual_memory()._asdict()
+            # memory info (including zfs arc)
+            data.update(self.middleware.call_sync('reporting.memory.info', allmetrics))
 
             # Get CPU usage %
             data['cpu'] = {}
