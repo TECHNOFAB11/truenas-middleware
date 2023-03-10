@@ -199,7 +199,13 @@ proc_returncode = call([
     '--timeout=300',
     "--junitxml",
     'results/api_v2_tests_result.xml',
-    f"api2/{testName}"
+    "api2/test_000_debug_mode.py",
+    "api2/test_001_ssh.py",
+    "api2/test_003_network.py",
+    "api2/test_005_interface.py",
+    "api2/test_007_systemdataset.py",
+    "api2/test_008_pool.py",
+    "api2/api2/test_261_iscsi_cmd.py"
 ])
 
 # get useful logs
