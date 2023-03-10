@@ -205,7 +205,7 @@ proc_returncode = call([
     "api2/test_005_interface.py",
     "api2/test_007_systemdataset.py",
     "api2/test_008_pool.py",
-    "api2/api2/test_261_iscsi_cmd.py"
+    "api2/test_261_iscsi_cmd.py"
 ])
 
 # get useful logs
