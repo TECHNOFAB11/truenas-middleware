@@ -118,7 +118,7 @@ class ActiveDirectoryService(Service):
                 'local': False,
                 'id_type_both': u['domain_info']['idmap_backend'] in id_type_both_backends,
                 'nt_name': None,
-                'sid': None,
+                'sid': u['sid'],
             }
             self.middleware.call_sync('dscache.insert', self._config.namespace.upper(), 'USER', entry)
 
@@ -139,7 +139,7 @@ class ActiveDirectoryService(Service):
                 'local': False,
                 'id_type_both': g['domain_info']['idmap_backend'] in id_type_both_backends,
                 'nt_name': None,
-                'sid': None,
+                'sid': g['sid'],
             }
             self.middleware.call_sync('dscache.insert', self._config.namespace.upper(), 'GROUP', entry)
 
