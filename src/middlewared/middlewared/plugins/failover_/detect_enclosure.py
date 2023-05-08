@@ -7,6 +7,8 @@ from middlewared.service import Service
 from middlewared.utils.functools import cache
 from .ha_hardware import HA_HARDWARE
 
+import libsgio
+
 ENCLOSURES_DIR = '/sys/class/enclosure/'
 
 
@@ -38,13 +40,14 @@ class EnclosureDetectionService(Service):
             return HARDWARE, NODE
 
         for enc in self.middleware.call_sync("enclosure.list_ses_enclosures"):
-            proc = subprocess.run(
-                ['/usr/bin/sg_ses', '-p', 'ed', enc],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            if proc.stdout:
-                info = proc.stdout.decode(errors='ignore', encoding='utf8')
+            try:
+                ed = libsgio.EnclosureDevice(enc).get_element_descriptor()
+            except OSError:
+                self.logger.warning("Error querying Element Descriptor page %r: %s", enc, ed)
+                continue
+
+            if ed:
+                info = ed
 
                 if re.search(HA_HARDWARE.ZSERIES_ENCLOSURE.value, info):
                     # Z-series Hardware (Echostream)
