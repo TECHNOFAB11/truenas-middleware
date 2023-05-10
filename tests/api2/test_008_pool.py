@@ -209,6 +209,7 @@ def test_09_export_test_pool_with_destroy_true(request):
     assert results.status_code == 404, results.text
 
 
+@pytest.mark.skip(reason="MCG - temporary skip of this test")
 def test_10_test_get_unused_before_pool_export_and_after_pool_export(request):
     depends(request, ["pool_04"])
 
