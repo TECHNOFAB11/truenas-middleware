@@ -869,14 +869,14 @@ def test_40_check_nfs_service_udp_parameter(request):
         # Confirm we can enable:
         #    DB == True, conf =='y', rpc will indicate supported
         results = GET("/service?service=nfs")                           # ======= DEBUG
-        print(f"\nnfs state = {results.json()[0]["state"]}")            # ======= DEBUG
+        print(f"\nnfs state = {results.json()[0]['state']}")            # ======= DEBUG
         set_payload['params'] = [{'udp': True}]
         res = make_ws_request(ip, set_payload)
         results = GET("/service?service=nfs")                           # ======= DEBUG
-        print(f"after: nfs state = {results.json()[0]["state"]}")       # ======= DEBUG
+        print(f"after: nfs state = {results.json()[0]['state']}")       # ======= DEBUG
         sleep(10)
         results = GET("/service?service=nfs")                           # ======= DEBUG
-        print(f"later: nfs state = {results.json()[0]["state"]}")       # ======= DEBUG
+        print(f"later: nfs state = {results.json()[0]['state']}")       # ======= DEBUG
         assert 'result' in str(res), res                                # ======= DEBUG
         assert res['result']['udp'] is True, res
         s = parse_server_config()
