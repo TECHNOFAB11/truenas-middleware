@@ -194,6 +194,7 @@ if verbose:
 if exitfirst:
     callargs.append("-x")
 
+callargs.append("-s")
 # Use the right python version to start pytest with sys.executable
 # So that we can support virtualenv python pytest.
 pytest_command = [
