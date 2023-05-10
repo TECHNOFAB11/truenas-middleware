@@ -870,6 +870,7 @@ def test_40_check_nfs_service_udp_parameter(request):
         #    DB == True, conf =='y', rpc will indicate supported
         set_payload['params'] = [{'udp': True}]
         res = make_ws_request(ip, set_payload)
+        assert 'result' in res, res
         assert res['result']['udp'] is True, res
         s = parse_server_config()
         assert s['nfsd']["udp"] == 'y', str(s)
