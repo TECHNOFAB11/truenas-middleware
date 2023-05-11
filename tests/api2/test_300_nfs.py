@@ -867,8 +867,8 @@ def test_40_check_nfs_service_udp_parameter(request):
         assert s['nfsd']["udp"] == 'n', str(s)
 
         print("\ncall: systemctl reset-failed")
-        SSH_TEST("logger 'MCG: calling -> systemctl reset-failed", user, password, ip)
-        SSH_TEST("logger 'MCG: nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd", user, password, ip)
+        SSH_TEST("logger 'MCG: =========> calling -> systemctl reset-failed", user, password, ip)
+        SSH_TEST("logger 'MCG: =========>            with: nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd", user, password, ip)
         # prevent Failed with result 'start-limit-hit'
         svcs_to_reset = "nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd"
         results = SSH_TEST(f"systemctl reset-failed {svcs_to_reset}", user, password, ip)
@@ -945,7 +945,6 @@ def test_42_check_nfs_client_status(request):
         assert results.json() == 1, results.text
 
 
-@pytest.mark.skip(reason="MCG - skipping, this is expected to fail")
 def test_43_check_nfsv4_acl_support(request):
     """
     This test validates reading and setting NFSv4 ACLs through an NFSv4
@@ -1034,7 +1033,6 @@ def test_43_check_nfsv4_acl_support(request):
                         assert ace == nfsacl[idx], str(ace)
 
 
-@pytest.mark.skip(reason="MCG - skipping, not part of investigation")
 def test_44_check_nfs_xattr_support(request):
     """
     Perform basic validation of NFSv4.2 xattr support.
@@ -1057,7 +1055,6 @@ def test_44_check_nfs_xattr_support(request):
                 assert xattr_val == "the_contents2"
 
 
-@pytest.mark.skip(reason="MCG - skipping, this is expected to fail without debug.py")
 def test_45_check_setting_runtime_debug(request):
     """
     This validates that the private NFS debugging API works correctly.
