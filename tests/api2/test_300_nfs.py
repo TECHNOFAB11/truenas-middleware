@@ -866,20 +866,15 @@ def test_40_check_nfs_service_udp_parameter(request):
         s = parse_server_config()
         assert s['nfsd']["udp"] == 'n', str(s)
 
-        SSH_TEST("logger 'MCG: =========> calling -> systemctl reset-failed'", user, password, ip)
-        SSH_TEST("logger 'MCG: =========>            with: nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd'", user, password, ip)
-        sleep(1)
-        # prevent Failed with result 'start-limit-hit'
+        # Multiple restarts cause systemd failures.  Reset the systemd counters.
         svcs_to_reset = "nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd"
         results = SSH_TEST(f"systemctl reset-failed {svcs_to_reset}", user, password, ip)
         assert results['result'] is True
+
         # Confirm we can enable:
         #    DB == True, conf =='y', rpc will indicate supported
         set_payload['params'] = [{'udp': True}]
         res = make_ws_request(ip, set_payload)
-        # SSH_TEST("logger 'MCG: -------------  START 1 min sleep ------------'", user, password, ip)
-        # sleep(60)
-        # SSH_TEST("logger 'MCG: -------------  EXIT 1 min sleep ------------'", user, password, ip)
         assert res['result']['udp'] is True, res
         s = parse_server_config()
         assert s['nfsd']["udp"] == 'y', str(s)
@@ -1071,10 +1066,10 @@ def test_45_check_setting_runtime_debug(request):
         set_payload = {'msg': 'method', 'method': 'nfs.set_debug', 'params': [enabled]}
         make_ws_request(ip, set_payload)
         res = make_ws_request(ip, get_payload)
-        assert set(res['result']['NFS']) == set(enabled['NFS']), res
-        assert set(res['result']['NFSD']) == set(enabled['NFSD']), res
-        assert set(res['result']['NLM']) == set(enabled['NLM']), res
-        assert set(res['result']['RPC']) == set(enabled['RPC']), res
+        assert set(res['result']['NFS']) == set(enabled['NFS']), f"Mismatch on NFS: {res}"
+        assert set(res['result']['NFSD']) == set(enabled['NFSD']), f"Mismatch on NFSD: {res}"
+        assert set(res['result']['NLM']) == set(enabled['NLM']), f"Mismatch on NLM: {res}"
+        assert set(res['result']['RPC']) == set(enabled['RPC']), f"Mismatch on RPC: {res}"
 
     finally:
         set_payload['params'] = [disabled]
@@ -1122,9 +1117,13 @@ def test_52_check_adjusting_threadpool_mode(request):
 def test_53_set_bind_ip():
     res = GET("/nfs/bindip_choices")
     assert res.status_code == 200, res.text
-    SSH_TEST(f"logger 'test_53 MCG: -------------  Display res.status_code = {res.status_code} ------------'", user, password, ip)
-    SSH_TEST(f"logger 'test_53 MCG: res.text -> {res.text}'")
-    SSH_TEST(f"logger 'test_53 MCG: res.json -> {res.json()}'")
+    # ------------ DEBUG -------------------
+    # SSH_TEST(f"logger 'test_53 MCG: -------------  Display res.status_code = {res.status_code} ------------'", user, password, ip)
+    # SSH_TEST(f"logger 'test_53 MCG: res.json -> {res.json()}'", user, password, ip)
+    # get_payload = {'msg': 'method', 'method': 'interface.ip_in_use', 'params': [{'static': True}]}
+    # testres = make_ws_request(ip, get_payload)
+    # SSH_TEST(f"logger 'test_53 MCG: testres = {testres}'", user, password, ip)
+    # ------------ DEBUG -------------------
     assert ip in res.json(), res.text
 
     res = PUT("/nfs/", {"bindip": [ip]})
