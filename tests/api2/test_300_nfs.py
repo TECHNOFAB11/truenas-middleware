@@ -866,9 +866,9 @@ def test_40_check_nfs_service_udp_parameter(request):
         s = parse_server_config()
         assert s['nfsd']["udp"] == 'n', str(s)
 
-        print("\ncall: systemctl reset-failed")
-        SSH_TEST("logger 'MCG: =========> calling -> systemctl reset-failed", user, password, ip)
-        SSH_TEST("logger 'MCG: =========>            with: nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd", user, password, ip)
+        SSH_TEST("logger 'MCG: =========> calling -> systemctl reset-failed'", user, password, ip)
+        SSH_TEST("logger 'MCG: =========>            with: nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd'", user, password, ip)
+        sleep(1)
         # prevent Failed with result 'start-limit-hit'
         svcs_to_reset = "nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd"
         results = SSH_TEST(f"systemctl reset-failed {svcs_to_reset}", user, password, ip)
@@ -877,12 +877,9 @@ def test_40_check_nfs_service_udp_parameter(request):
         #    DB == True, conf =='y', rpc will indicate supported
         set_payload['params'] = [{'udp': True}]
         res = make_ws_request(ip, set_payload)
-        print("-------------  START 3 min sleep ------------")
-        SSH_TEST("logger 'MCG: -------------  START 3 min sleep ------------'", user, password, ip)
-        sleep(180)
-        print("-------------  EXIT 3 min sleep ------------")
-        SSH_TEST("logger 'MCG: -------------  EXIT 3 min sleep ------------'", user, password, ip)
-        # results = GET("/service?service=nfs")                           # ======= DEBUG
+        # SSH_TEST("logger 'MCG: -------------  START 1 min sleep ------------'", user, password, ip)
+        # sleep(60)
+        # SSH_TEST("logger 'MCG: -------------  EXIT 1 min sleep ------------'", user, password, ip)
         assert res['result']['udp'] is True, res
         s = parse_server_config()
         assert s['nfsd']["udp"] == 'y', str(s)
@@ -1125,6 +1122,8 @@ def test_52_check_adjusting_threadpool_mode(request):
 def test_53_set_bind_ip():
     res = GET("/nfs/bindip_choices")
     assert res.status_code == 200, res.text
+    SSH_TEST("logger 'MCG: -------------  Display res ------------'", user, password, ip)
+    SSH_TEST(f"logger 'MCG: {res}'")
     assert ip in res.json(), res.text
 
     res = PUT("/nfs/", {"bindip": [ip]})
