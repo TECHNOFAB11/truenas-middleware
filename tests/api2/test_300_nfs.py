@@ -874,7 +874,9 @@ def test_40_check_nfs_service_udp_parameter(request):
         res = make_ws_request(ip, set_payload)
         results = GET("/service?service=nfs")                           # ======= DEBUG
         print(f"after: nfs state = {results.json()[0]['state']}")       # ======= DEBUG
-        sleep(10)
+        print("-------------  START 10 min sleep ------------")
+        sleep(600)
+        print("-------------  EXIT 10 min sleep ------------")
         results = GET("/service?service=nfs")                           # ======= DEBUG
         print(f"later: nfs state = {results.json()[0]['state']}")       # ======= DEBUG
         assert 'result' in str(res), res                                # ======= DEBUG
