@@ -1122,8 +1122,9 @@ def test_52_check_adjusting_threadpool_mode(request):
 def test_53_set_bind_ip():
     res = GET("/nfs/bindip_choices")
     assert res.status_code == 200, res.text
-    SSH_TEST("logger 'MCG: -------------  Display res ------------'", user, password, ip)
-    SSH_TEST(f"logger 'MCG: {res}'")
+    SSH_TEST(f"logger 'test_53 MCG: -------------  Display res.status_code = {res.status_code} ------------'", user, password, ip)
+    SSH_TEST(f"logger 'test_53 MCG: res.text -> {res.text}'")
+    SSH_TEST(f"logger 'test_53 MCG: res.json -> {res.json()}'")
     assert ip in res.json(), res.text
 
     res = PUT("/nfs/", {"bindip": [ip]})
