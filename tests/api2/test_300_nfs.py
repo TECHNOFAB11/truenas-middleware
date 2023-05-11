@@ -867,17 +867,21 @@ def test_40_check_nfs_service_udp_parameter(request):
         assert s['nfsd']["udp"] == 'n', str(s)
 
         print("\ncall: systemctl reset-failed")
+        SSH_TEST("logger 'MCG: calling -> systemctl reset-failed", user, password, ip)
+        SSH_TEST("logger 'MCG: nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd", user, password, ip)
         # prevent Failed with result 'start-limit-hit'
-        svcs_to_reset = "nfs-idmapd nfs-mountd rpc-statd"
+        svcs_to_reset = "nfs-idmapd nfs-mountd nfs-server rpcbind rpc-statd"
         results = SSH_TEST(f"systemctl reset-failed {svcs_to_reset}", user, password, ip)
         assert results['result'] is True
         # Confirm we can enable:
         #    DB == True, conf =='y', rpc will indicate supported
         set_payload['params'] = [{'udp': True}]
         res = make_ws_request(ip, set_payload)
-        print("-------------  START 5 min sleep ------------")
-        sleep(299)
-        print("-------------  EXIT 5 min sleep ------------")
+        print("-------------  START 3 min sleep ------------")
+        SSH_TEST("logger 'MCG: -------------  START 3 min sleep ------------'", user, password, ip)
+        sleep(180)
+        print("-------------  EXIT 3 min sleep ------------")
+        SSH_TEST("logger 'MCG: -------------  EXIT 3 min sleep ------------'", user, password, ip)
         # results = GET("/service?service=nfs")                           # ======= DEBUG
         assert res['result']['udp'] is True, res
         s = parse_server_config()
