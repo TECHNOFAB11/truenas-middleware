@@ -194,7 +194,6 @@ if verbose:
 if exitfirst:
     callargs.append("-x")
 
-callargs.append("-s")
 # Use the right python version to start pytest with sys.executable
 # So that we can support virtualenv python pytest.
 pytest_command = [
@@ -214,10 +213,11 @@ if tests:
     pytest_command.extend(tests)
 else:
     # pytest_command.append(f"api2/{testName}")
-    pytest_command.append(f"api2/test_000_debug_mode.py")
-    pytest_command.append(f"api2/test_001_ssh.py")
-    pytest_command.append(f"api2/test_008_pool.py")
-    pytest_command.append(f"api2/test_300_nfs.py")
+    pytest_command.append("api2/test_000_debug_mode.py")
+    pytest_command.append("api2/test_001_ssh.py")
+    pytest_command.append("api2/test_005_interface.py")
+    pytest_command.append("api2/test_008_pool.py")
+    pytest_command.append("api2/test_300_nfs.py")
 
 
 proc_returncode = call(pytest_command)
