@@ -1115,21 +1115,11 @@ def test_52_check_adjusting_threadpool_mode(request):
 
 
 def test_53_set_bind_ip():
+    '''
+    This test requires a static IP address
+    '''
     res = GET("/nfs/bindip_choices")
     assert res.status_code == 200, res.text
-    # ------------ DEBUG -------------------
-    SSH_TEST(f"logger 'test_53 MCG: -------------  Display res.status_code = {res.status_code} ------------'", user, password, ip)
-    SSH_TEST(f"logger 'test_53 MCG: res.json -> {res.json()}'", user, password, ip)
-    get_payload = {'msg': 'method', 'method': 'interface.query', 'params': []}
-    testquery = make_ws_request(ip, get_payload)
-    SSH_TEST(f"logger 'test_53 MCG: testquery = {testquery}'", user, password, ip)
-    get_payload = {'msg': 'method', 'method': 'interface.ip_in_use', 'params': []}
-    testAres = make_ws_request(ip, get_payload)
-    SSH_TEST(f"logger 'test_53 MCG: testAres = {testAres}'", user, password, ip)
-    get_payload = {'msg': 'method', 'method': 'interface.ip_in_use', 'params': [{'static': True}]}
-    testSres = make_ws_request(ip, get_payload)
-    SSH_TEST(f"logger 'test_53 MCG: testSres = {testSres}'", user, password, ip)
-    # ------------ DEBUG -------------------
     assert ip in res.json(), res.text
 
     res = PUT("/nfs/", {"bindip": [ip]})
