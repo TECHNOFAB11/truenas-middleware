@@ -2,15 +2,15 @@
 2FA AD Support
 
 Revision ID: cf91fa3d0696
-Revises: 58a555dd9612
-Create Date: 2023-05-17 16:45:17.935672+00:00
+Revises: a70b230c1675
+Create Date: 2023-05-19 19:45:17.935672+00:00
 """
 from alembic import op
 import sqlalchemy as sa
 
 
 revision = 'cf91fa3d0696'
-down_revision = '58a555dd9612'
+down_revision = 'a70b230c1675'
 branch_labels = None
 depends_on = None
 
