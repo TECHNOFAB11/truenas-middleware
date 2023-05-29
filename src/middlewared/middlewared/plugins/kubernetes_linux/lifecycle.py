@@ -40,7 +40,8 @@ class KubernetesService(Service):
             if not node_config['node_configured']:
                 raise CallError(f'Unable to configure node: {node_config["error"]}')
             await self.post_start_internal()
-            await self.add_iptables_rules()
+            # prevent iptables rules from being added to be able to access Kubernetes from non-localhost
+            # await self.add_iptables_rules()
         except Exception as e:
             await self.middleware.call('alert.oneshot_create', 'ApplicationsStartFailed', {'error': str(e)})
             raise
